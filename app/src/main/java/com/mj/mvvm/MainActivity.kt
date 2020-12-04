@@ -2,34 +2,34 @@ package com.mj.mvvm
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.mj.mvvm.API.RetrofitConnection
 import com.mj.mvvm.ContactData.Contact
+import com.mj.mvvm.ViewModel.APIViewModel
 import com.mj.mvvm.ViewModel.ContactViewModel
 import com.mj.mvvm.Vo.DataVo
 import kotlinx.android.synthetic.main.activity_main.*
-import org.koin.android.ext.android.inject
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
-    //view modle
+    private val TAG = this.javaClass.simpleName
+
+    //내부 db viewModel
     private lateinit var contactViewModel: ContactViewModel
 
-    //koin, inject Dependency
-    private val api: RetrofitConnection by inject()
+    //api viewModel
+    private lateinit var externalViewModel: APIViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        initLayout()
 
         val adpater = ContactAdapter({ contact ->
 
@@ -48,35 +48,31 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         main_recycleview.layoutManager = layoutManager
         main_recycleview.setHasFixedSize(true)
 
+
+        /**
+         * room
+         */
         contactViewModel = ViewModelProvider(this).get(ContactViewModel::class.java)
         contactViewModel.getAll().observe(this, Observer<List<Contact>> { contacts ->
             adpater.setContacts(contacts)
         })
 
-
-
-        getJsonData()
+        /**
+         * api
+         */
+        val androidViewModelFactory = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+        externalViewModel = ViewModelProvider(this, androidViewModelFactory).get(APIViewModel::class.java)
+        externalViewModel.exampleData.observe(this, Observer<DataVo> { it ->
+            Log.v(TAG, "=====${it.name} ${it.age}")
+            textview1.text = it.name
+            textview2.text = it.age
+        })
+        externalViewModel.requestData()
 
     }
 
-
-    private fun getJsonData() {
-        api.getNumber().enqueue(object : Callback<DataVo?> {
-
-            override fun onResponse(call: Call<DataVo?>, response: Response<DataVo?>) {
-                if (response.isSuccessful) {
-                    val result = response.body() as DataVo
-                    textview1.text = result.name
-                    textview2.text = result.age
-                } else {
-                    Toast.makeText(this@MainActivity, "fail", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onFailure(call: Call<DataVo?>, t: Throwable) {
-                Toast.makeText(this@MainActivity, "fail", Toast.LENGTH_SHORT).show()
-            }
-        })
+    private fun initLayout() {
+        main_button.setOnClickListener(this)
     }
 
 
