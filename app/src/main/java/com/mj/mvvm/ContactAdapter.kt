@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.mj.mvvm.Data.Contact
+import com.mj.mvvm.ContactData.Contact
 
 class ContactAdapter(
     val contactItemClick: (Contact) -> Unit,

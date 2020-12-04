@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
-import com.mj.mvvm.Data.Contact
+import com.mj.mvvm.ContactData.Contact
 import com.mj.mvvm.ViewModel.ContactViewModel
 import kotlinx.android.synthetic.main.activity_add.*
 

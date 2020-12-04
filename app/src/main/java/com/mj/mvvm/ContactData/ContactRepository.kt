@@ -1,4 +1,4 @@
-package com.mj.mvvm.Data
+package com.mj.mvvm.ContactData
 
 import android.app.Application
 import android.util.Log

@@ -3,8 +3,8 @@ package com.mj.mvvm.ViewModel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import com.mj.mvvm.Data.Contact
-import com.mj.mvvm.Data.ContactRepository
+import com.mj.mvvm.ContactData.Contact
+import com.mj.mvvm.ContactData.ContactRepository
 
 class ContactViewModel(application: Application): AndroidViewModel(application){
 

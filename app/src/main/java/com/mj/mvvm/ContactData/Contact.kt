@@ -1,4 +1,4 @@
-package com.mj.mvvm.Data
+package com.mj.mvvm.ContactData
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

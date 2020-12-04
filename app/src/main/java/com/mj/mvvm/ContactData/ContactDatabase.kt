@@ -1,4 +1,4 @@
-package com.mj.mvvm.Data
+package com.mj.mvvm.ContactData
 
 import android.content.Context
 import androidx.room.Database

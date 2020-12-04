@@ -2,19 +2,30 @@ package com.mj.mvvm
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.mj.mvvm.Data.Contact
+import com.mj.mvvm.API.RetrofitConnection
+import com.mj.mvvm.ContactData.Contact
 import com.mj.mvvm.ViewModel.ContactViewModel
+import com.mj.mvvm.Vo.DataVo
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.android.ext.android.inject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), View.OnClickListener {
 
+    //view modle
     private lateinit var contactViewModel: ContactViewModel
 
+    //koin, inject Dependency
+    private val api: RetrofitConnection by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,19 +53,50 @@ class MainActivity : AppCompatActivity() {
             adpater.setContacts(contacts)
         })
 
-        main_button.setOnClickListener {
-            val intent = Intent(this, AddActivity::class.java)
-            startActivity(intent)
-        }
+
+
+        getJsonData()
+
     }
+
+
+    private fun getJsonData() {
+        api.getNumber().enqueue(object : Callback<DataVo?> {
+
+            override fun onResponse(call: Call<DataVo?>, response: Response<DataVo?>) {
+                if (response.isSuccessful) {
+                    val result = response.body() as DataVo
+                    textview1.text = result.name
+                    textview2.text = result.age
+                } else {
+                    Toast.makeText(this@MainActivity, "fail", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<DataVo?>, t: Throwable) {
+                Toast.makeText(this@MainActivity, "fail", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
 
     private fun deleteDialog(contact: Contact) {
         val builder = AlertDialog.Builder(this)
         builder.setMessage("Delete selected contact?")
-            .setNegativeButton("NO") { _, _ -> }
-            .setPositiveButton("YES") { _, _ ->
-                contactViewModel.delete(contact)
-            }
+                .setNegativeButton("NO") { _, _ -> }
+                .setPositiveButton("YES") { _, _ ->
+                    contactViewModel.delete(contact)
+                }
         builder.show()
+    }
+
+    override fun onClick(view: View?) {
+        when (view?.id) {
+
+            R.id.main_button -> {
+                val intent = Intent(this, AddActivity::class.java)
+                startActivity(intent)
+            }
+        }
     }
 }
